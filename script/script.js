@@ -31,10 +31,11 @@ document.getElementById('button').onclick = () => {
 
 document.getElementById('pirate').onclick = () => {
 
-  let wrd = 'pirate';
+  let wrd = document.getElementById('text').value;
 
   axios.get(`http://api.urbandictionary.com/v0/define?term=${wrd}`)
     .then(response => {
+      console.log('test');
       console.log(response);
       let mainDiv = document.getElementById('card');
 
@@ -51,7 +52,8 @@ document.getElementById('pirate').onclick = () => {
           item.author,
           item.thumbs_up,
           item.thumbs_down,
-          item.written_on
+          item.written_on,
+          true
         );
 
 
@@ -62,7 +64,7 @@ document.getElementById('pirate').onclick = () => {
 }
 
 class DivConstructor {
-  constructor(word, definition, example, author, upvotes, downvotes, timestamp) {
+  constructor(word, definition, example, author, upvotes, downvotes, timestamp, isPirate=false) {
     this.word = word;
     this.definition = this.splitDefinition(definition);
     this.example = this.splitDefinition(example);
@@ -70,11 +72,12 @@ class DivConstructor {
     this.upvotes = upvotes;
     this.downvotes = downvotes;
     this.timestamp = this.Time(timestamp);
+    this.isPirate = isPirate;
   }
 
 
   splitDefinition(definition) {    
-    let defArr = definition.replace('1.', '').replace(/\[/g, `<a class="link" href="#">`).replace(/\]/g, `</a>`).split(/\d\./g);
+    let defArr = definition.replace('1.', '').replace(/\[/g, `<a class="link" href="#">`).replace(/\]/g, `</a>`).split(/\d\.|\d\)/g);
     let ol = document.createElement('ol');  
     defArr.map(el => {        
       let li = document.createElement('li');
@@ -129,7 +132,11 @@ class DivConstructor {
   createAuthor() {
     let author = document.createElement('p');
     author.setAttribute('class', 'card__author');
-    author.innerHTML = this.author;
+    if (this.isPirate == true) {
+      author.innerHTML = `Captain ${this.author}`;
+    } else {
+      author.innerHTML = this.author;
+    }
 
     return author;
 
